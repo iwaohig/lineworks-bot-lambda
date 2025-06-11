@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: LINE WORKS Bot AWS Lambda with API Gateway
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+    Runtime: python3.12
+
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+    Description: Stage name for API Gateway
+
+Resources:
+  LineWorksApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'content-type'"
+        AllowOrigin: "'*'"
+
+  LineWorksBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Environment:
+        Variables:
+          LINEWORKS_CLIENT_ID: MhOIRuvy6pmxUcNTAxTg
+          LINEWORKS_CLIENT_SECRET: VjlkX_IIxs
+          LINEWORKS_SERVICE_ACCOUNT_ID: wpumx.serviceaccount@lwugdev
+          LINEWORKS_PRIVATE_KEY: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dnU2tBZ0VBQW9JQkFRRFg4clA4RGhuVEp3Nm4KSFBJakxoVXg2bVZqR1hUcVlUSk1OemJHSWF4dVdPdlM5Q2l4QlltQjdvWFd2cDFtaEhsaExZbXNrS1dpQzUvMQpSemNOMS80ZHhjK0EyTnV2WExiUlUwZzJwNFRPVDZVV3o5SjlCZkR2bExWNWhEaDF4anBtdmVPZFdqS1RRUTcrCmZLSnlBNW16ZmgySEROelBaaEtvK2xacVlEa0NnelBhd1FVRlIvVlB5ZEVhR0JyTmtvY2xRZGp2dnFJOEFqcFUKUnhzQUNkNS9Ta1M1RDVhbDA5UUpRd2t0Mno5cE4ySzZsM3BKYmZCZkFjc0RzYnZsRnh6OWozSmNhZStwdUo4RQowRGVQVmJTbmNmbHBwd2s0UXhJVWs2ZENQakxYbFV5elkwc2ZBeUwyMlZtMW80Wks3OWpHVk1qQm1lZ1ZuNitECkxmd3lpTms3QWdNQkFBRUNnZ0VBWkMrb2l3YnJ1a2ZEaDRwcFdDTDRHRmxid2xjOEk4VUdOYy9qN0pZUXpuMFkKbzUwOUI2dSsrUFgxU0FUVk40dThXSFp0Q2c5dG1MbDE4N0NmZlIrNU9JemVVVFBLOEJlK2hXenk4dEJUVC9ncAphbVR1amF4azlISDBvN1RSRU9ydmkxMExyYVA4Rk04NUtwNGVLM0U2TE1rVTMrUDZ5WW5jbkdMUUZyZ2ZtdWJ6CnFoWkRGdTFLVWY5QXcwMTV2enEvMXlaVzFlVlF6UlFmZy8xMGliZExHdFBtc1BYRldtd2xhQWQ1ZVYvZ2JmclUKY1REd1RHeXU1WURRemM1TWNEcHNsQjlLbDRhYkMzbkpScXF2bFZSTERyWFNXZVcrVForcXJHVDNtS0xlbFRGcwpWRzdSaG82bzArc3ZkRkJWU1Y3MHVTNko0RTRrYk9PYi9RYWdDRXRuV1FLQmdRRHpkRGNDRVJOK0JNUVdNYlVjCmhFQy9hYk94VWgzL1BzaDVqc3RUc2RyV1Q2cTMyWWx6azEvRURKc09wZ2tINEtMeURTK1hqdzN5dGwzdG1wckUKelFCVktxWk5OQjBBSHYrR2ZIcFVvTTQ0UTRJUDh1MGlKVy9jb3EzSVNhbmVMakFrR2VOVWcrRlltYWF6bnhyNgorZmdDSHFHUXh1MHZnWVE0UDUvbXRsdVlmd0tCZ1FEakU1MUtoUDZwaCtJaVB2OXdVUUxISXJ5ZmZqUTZReE5uCm84NGFBcWI5RGVDTjNpb2RwZSs5aWtKWE1MVlVxSW5wZVdMSm9tVlorcFV0cTRMNGZNRjFEL1o3KzRvM3VSZHcKdDJLS0F2S3VqZ0xoaHNHbHBDWVV3RFpZbzNnd3VkMHRNcTE0MGtkOVBZTmpHTkVnQnVYMFR0aFpVb2lsSHRSVwphZFdHT1ovQlJRS0JnUURySSsxWmRxclFCY1JxOTFuSmtFZUZXWSt3amZMaExIK3ZRT2RNRURXZzExTzV2VWZRCk5LRERsN1ZRQWJncFBxUERqRTdTWU42RTlmVmszL1hxYldLTDMrUytIcjUvOW5DeE1adHFEK0wrWHQzSmo4WFEKUEQ1OTZUWldoQ2VvckEzZFlJKzhlcUIxMWZvMzlVMjI2U2JNelU4WnFiay9NQ1pIdWRRMG54OTYrd0tCZ0VLMQpmMjdsOVQ1dXFmTXZtTEV4UzJTZkF0VEVLYW00RE5wVWwvYXlNc2FDcmlaZlR2WVl5bjVmUUxBR29pNjF1Slk3ClQ5YzJleG5jOExoUys0M3VjSkxvVnB3RHdJNHdOUCtyRUNyRlJQQWN6aUhkQ2NTVW5ZOVpERjRyMytKSXAvNWcKTmZBWnJtRFBrbXFwWHI1TzZIMUdNRzdGUFZsczNpcG91dzdNbk84VkFvR0JBSXB6T1VhVFF2ckNNTzhRT3dmZgplWVVxRmRNN0MxSGpodVlLSzBxT2pScVJ5dW1BK2FxUnB3czdUTEt4eXQrQWZnQ2g4bi9IU1ZMYWtCN0NzY1B5ClRhZEJmbUFOUGFIWUhWWEFwQzB2cmNHNFdleW9RTzliZ1hkdTVoM0V5bGJoUjE1M0JpYVRoYUZqbmJIdGxlajkKeVZWZUd3SGZrNWdhWnZRbFd6ZWFwTVdYCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
+          LINEWORKS_DOMAIN_ID: "400083023"
+          LINEWORKS_BOT_ID: "10207111"
+      Events:
+        SendMessage:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /send_message
+            Method: post
+        Health:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /health
+            Method: get
+        Test:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /test
+            Method: get
+        Webhook:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /webhook
+            Method: post
+
+
+Outputs:
+  LineWorksApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${LineWorksApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
+  
+  LineWorksBotFunction:
+    Description: "LINE WORKS Bot Lambda Function ARN"
+    Value: !GetAtt LineWorksBotFunction.Arn
+
+  LineWorksBotFunctionIamRole:
+    Description: "Implicit IAM Role created for LINE WORKS Bot function"
+    Value: !GetAtt LineWorksBotFunctionRole.Arn

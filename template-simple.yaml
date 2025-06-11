@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: LINE WORKS Bot AWS Lambda with API Gateway (Simple Version)
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+    Runtime: python3.12
+
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+    Description: Stage name for API Gateway
+  
+  LineWorksClientId:
+    Type: String
+    NoEcho: true
+    Description: LINE WORKS Client ID
+  
+  LineWorksClientSecret:
+    Type: String
+    NoEcho: true
+    Description: LINE WORKS Client Secret
+  
+  LineWorksServiceAccountId:
+    Type: String
+    NoEcho: true
+    Description: LINE WORKS Service Account ID
+  
+  LineWorksPrivateKey:
+    Type: String
+    NoEcho: true
+    Description: LINE WORKS Private Key
+  
+  LineWorksDomainId:
+    Type: String
+    NoEcho: true
+    Description: LINE WORKS Domain ID
+  
+  LineWorksBotId:
+    Type: String
+    Default: "10207111"
+    Description: LINE WORKS Bot ID
+
+Resources:
+  LineWorksApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'content-type'"
+        AllowOrigin: "'*'"
+
+  LineWorksBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Environment:
+        Variables:
+          LINEWORKS_CLIENT_ID: !Ref LineWorksClientId
+          LINEWORKS_CLIENT_SECRET: !Ref LineWorksClientSecret
+          LINEWORKS_SERVICE_ACCOUNT_ID: !Ref LineWorksServiceAccountId
+          LINEWORKS_PRIVATE_KEY: !Ref LineWorksPrivateKey
+          LINEWORKS_DOMAIN_ID: !Ref LineWorksDomainId
+          LINEWORKS_BOT_ID: !Ref LineWorksBotId
+      Events:
+        SendMessage:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /send_message
+            Method: post
+        Health:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /health
+            Method: get
+        Test:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /test
+            Method: get
+        Webhook:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LineWorksApi
+            Path: /webhook
+            Method: post
+
+Outputs:
+  LineWorksApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${LineWorksApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/"
+  
+  LineWorksBotFunction:
+    Description: "LINE WORKS Bot Lambda Function ARN"
+    Value: !GetAtt LineWorksBotFunction.Arn

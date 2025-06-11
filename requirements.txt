@@ -1,0 +1,3 @@
+# AWS Lambda dependencies
+requests
+PyJWT[crypto]
